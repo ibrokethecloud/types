@@ -1,6 +1,8 @@
 package v3
 
 import (
+	"strings"
+
 	"github.com/rancher/norman/condition"
 	"github.com/rancher/norman/types"
 	v1 "k8s.io/api/core/v1"
@@ -25,6 +27,7 @@ type CatalogSpec struct {
 	CatalogKind string `json:"catalogKind,omitempty"`
 	Username    string `json:"username,omitempty"`
 	Password    string `json:"password,omitempty" norman:"type=password"`
+	HelmVersion string `json:"helmVersion,omitempty" norman:"noupdate"`
 }
 
 type CatalogStatus struct {
@@ -112,6 +115,7 @@ type TemplateSpec struct {
 }
 
 type TemplateStatus struct {
+	HelmVersion string `json:"helmVersion,omitempty" norman:"noupdate,nocreate"`
 }
 
 type TemplateVersion struct {
@@ -163,6 +167,7 @@ type TemplateVersionSpec struct {
 }
 
 type TemplateVersionStatus struct {
+	HelmVersion string `json:"helmVersion,omitempty" norman:"noupdate,nocreate"`
 }
 
 type File struct {
@@ -228,6 +233,13 @@ type ProjectCatalog struct {
 
 	Catalog     `json:",inline" mapstructure:",squash"`
 	ProjectName string `json:"projectName,omitempty" norman:"type=reference[project]"`
+}
+
+func (p *ProjectCatalog) ObjClusterName() string {
+	if parts := strings.SplitN(p.ProjectName, ":", 2); len(parts) == 2 {
+		return parts[0]
+	}
+	return ""
 }
 
 type ClusterCatalog struct {

@@ -65,11 +65,17 @@ type RancherKubernetesEngineConfig struct {
 	HelmController HelmControllerConfig `yaml:"helm_controller" json:"helm_controller,omitempty"`
 }
 
+func (r *RancherKubernetesEngineConfig) ObjClusterName() string {
+	return r.ClusterName
+}
+
 type NodeUpgradeStrategy struct {
-	// MaxUnavailable input can be a number of nodes or a percentage of nodes (example, max_unavailable: 2 OR max_unavailable: 20%)
-	MaxUnavailable string          `yaml:"max_unavailable" json:"maxUnavailable,omitempty" norman:"min=1,default=10%"`
-	Drain          bool            `yaml:"drain" json:"drain,omitempty"`
-	DrainInput     *NodeDrainInput `yaml:"node_drain_input" json:"nodeDrainInput,omitempty"`
+	// MaxUnavailableWorker input can be a number of nodes or a percentage of nodes (example, max_unavailable_worker: 2 OR max_unavailable_worker: 20%)
+	MaxUnavailableWorker string `yaml:"max_unavailable_worker" json:"maxUnavailableWorker,omitempty" norman:"min=1,default=10%"`
+	// MaxUnavailableControlplane input can be a number of nodes or a percentage of nodes
+	MaxUnavailableControlplane string          `yaml:"max_unavailable_controlplane" json:"maxUnavailableControlplane,omitempty" norman:"min=1,default=1"`
+	Drain                      bool            `yaml:"drain" json:"drain,omitempty"`
+	DrainInput                 *NodeDrainInput `yaml:"node_drain_input" json:"nodeDrainInput,omitempty"`
 }
 
 type BastionHost struct {
@@ -854,7 +860,12 @@ type DNSConfig struct {
 }
 
 type Nodelocal struct {
-	IPAddress string `yaml:"ipaddress" json:"ipAddress,omitempy"`
+	// link-local IP for nodelocal DNS
+	IPAddress string `yaml:"ip_address" json:"ipAddress,omitempy"`
+	// Nodelocal DNS daemonset upgrade strategy
+	UpdateStrategy *appsv1.DaemonSetUpdateStrategy `yaml:"update_strategy" json:"updateStrategy,omitempty"`
+	// NodeSelector key pair
+	NodeSelector map[string]string `yaml:"node_selector" json:"nodeSelector,omitempty"`
 }
 
 // LinearAutoscalerParams contains fields expected by the cluster-proportional-autoscaler https://github.com/kubernetes-incubator/cluster-proportional-autoscaler/blob/0c61e63fc81449abdd52315aa27179a17e5d1580/pkg/autoscaler/controller/linearcontroller/linear_controller.go#L50
