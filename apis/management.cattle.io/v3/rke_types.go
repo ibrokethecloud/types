@@ -61,6 +61,8 @@ type RancherKubernetesEngineConfig struct {
 	DNS *DNSConfig `yaml:"dns" json:"dns,omitempty"`
 	// Upgrade Strategy for the cluster
 	UpgradeStrategy *NodeUpgradeStrategy `yaml:"upgrade_strategy,omitempty" json:"upgradeStrategy,omitempty"`
+	// Helm Controller for the cluster
+	HelmController HelmControllerConfig `yaml:"helm_controller" json:"helm_controller,omitempty"`
 }
 
 type NodeUpgradeStrategy struct {
@@ -163,6 +165,8 @@ type RKESystemImages struct {
 	MetricsServer string `yaml:"metrics_server" json:"metricsServer,omitempty"`
 	// Pod infra container image for Windows
 	WindowsPodInfraContainer string `yaml:"windows_pod_infra_container" json:"windowsPodInfraContainer,omitempty"`
+	// Helm Controller image
+	HelmController string `yaml:"helm_controller" json:"helmController,omitempty"`
 }
 
 type RKEConfigNode struct {
@@ -874,4 +878,10 @@ type SecretsEncryptionConfig struct {
 	Enabled bool `yaml:"enabled" json:"enabled,omitempty"`
 	// Custom Encryption Provider configuration object
 	CustomConfig *apiserverconfig.EncryptionConfiguration `yaml:"custom_config" json:"customConfig,omitempty" norman:"type=map[json]"`
+}
+
+type HelmControllerConfig struct {
+	// Scope of helm controller. Valid values are "none", "namespace" and "cluster"
+	// none means HelmController will be disabled
+	Scope string `yaml:"scope" json:"scope"`
 }
